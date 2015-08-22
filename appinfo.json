@@ -1,0 +1,22 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "jmmerino@gmail.com",
+    "longName": "BUSAL-C",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "BUSAL-C",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "4fe02054-18e8-4900-8f9d-25a2dd0fa8ba",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
