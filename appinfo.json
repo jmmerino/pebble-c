@@ -1,5 +1,8 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "LINE_NAME": 0,
+        "LINE_NUM": 0
+    },
     "capabilities": [
         ""
     ],
