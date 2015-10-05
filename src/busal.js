@@ -39,22 +39,33 @@ Pebble.addEventListener('appmessage',
 );
 
 function recursive_send(api_lines) {
-  if (api_lines.lenth) {
+  if (api_lines.length) {
     var line = api_lines.shift(),
         dictionary = {
-          'LINE_NAME': line.name,
-          'LINE_NUM': line.num
+          'LINE_NAME': line.name.replace(/[^\x00-\x7F]/g, ""),
+          'LINE_NUM': line.num.replace(/[^\x00-\x7F]/g, "")
         };
     
-    // Send to Pebble
-    Pebble.sendAppMessage(dictionary,
-      function(e) {
-        recursive_send(api_lines);
-        console.log('Line sent to Pebble successfully!');
-      },
-      function(e) {
-        console.log('Error sending line info to Pebble!');
-      }     
-    );
+    console.log("Sending: " + line.name);
+    
+    try{
+      // Send to Pebble
+      Pebble.sendAppMessage(dictionary,
+        function(e) {
+          recursive_send(api_lines);
+          console.log('Line sent to Pebble successfully!');
+        },
+        function(e) {
+          console.log('Error sending line info to Pebble!');
+        }     
+      );
+    } catch(ex){
+      console.log(ex);
+    }
+      
+  } else {
+    Pebble.sendAppMessage({
+      'MSG_END': '1'
+    });
   }
 }

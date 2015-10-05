@@ -1,7 +1,8 @@
 {
     "appKeys": {
         "LINE_NAME": 0,
-        "LINE_NUM": 0
+        "LINE_NUM": 1,
+        "MSG_END": 99
     },
     "capabilities": [
         ""

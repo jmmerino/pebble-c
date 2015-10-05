@@ -2,11 +2,11 @@
 #define BUSAL_COLOR GColorFromHEX(0xee6e73)
   
 #include <splash_window.h>
-#include <api_lines.h>
+#include <lines_window.h>
 
 static void init() {  
   splash_window_show();
-  init_api_lines();
+  init_lines();
 }
 
 static void deinit() {
