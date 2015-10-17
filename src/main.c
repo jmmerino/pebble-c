@@ -1,6 +1,6 @@
 #include <pebble.h>
 #define BUSAL_COLOR GColorFromHEX(0xee6e73)
-  
+
 #include <splash_window.h>
 #include <lines_window.h>
 

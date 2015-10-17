@@ -39,6 +39,7 @@ Pebble.addEventListener('appmessage',
 );
 
 function recursive_send(api_lines) {
+  console.log('Recursive...');
   if (api_lines.length) {
     var line = api_lines.shift(),
         dictionary = {
@@ -66,6 +67,12 @@ function recursive_send(api_lines) {
   } else {
     Pebble.sendAppMessage({
       'MSG_END': '1'
+    },
+    function(e) {
+      console.log('End of lines sent to Pebble successfully!');
+    },
+    function(e) {
+      console.log('Error sending end of lines info to Pebble!');
     });
   }
 }
