@@ -1,17 +1,11 @@
 #include <pebble.h>
 
+#include <connection.h>
 #include <lines_window.h>
 #include <directions_window.h>
 #include <splash_window.h>
 
 #define BUSAL_COLOR GColorFromHEX(0xee6e73)
-#define LINE_NAME 0
-#define LINE_NUM 1
-#define LINE_DIRECTION1 2
-#define LINE_DIRECTION2 3
-#define MSG_END 99
-#define NUM_FIRST_MENU_ITEMS 3
-#define NUM_MENU_SECTIONS 1
   
 static Window *s_lines_window;
 static MenuLayer *s_menu_layer;
@@ -26,7 +20,7 @@ static uint16_t menu_get_num_sections_callback(MenuLayer *menu_layer, void *data
   return 1; // Only one dimension menu
 }
 
-static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {
+static uint16_t menu_get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *data) {  
   return num_items;
 }
 
@@ -97,7 +91,9 @@ static void lines_window_unload(Window *window) {
   menu_layer_destroy(s_menu_layer);
 }
 
-void lines_window_show() {
+void lines_window_show(int num_items_param) {  
+  num_items = num_items_param;  
+
   // Create main Window
   s_lines_window = window_create();
   window_set_window_handlers(s_lines_window, (WindowHandlers) {
@@ -110,62 +106,10 @@ void lines_window_show() {
 }
 
 
-////////////////////////////////////
-//  MESSAGES COMUNICATION WITH JS
-////////////////////////////////////
-
-
-static void inbox_dropped_callback(AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped! reason: %d", reason);
-}
-
-static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
-}
-
-static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
-}
-
-static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
-  // Read first item
-  Tuple *t_line_name = dict_find(iterator, LINE_NAME);
-  Tuple *t_line_num = dict_find(iterator, LINE_NUM);
-  Tuple *t_line_direction1 = dict_find(iterator, LINE_DIRECTION1);
-  Tuple *t_line_direction2 = dict_find(iterator, LINE_DIRECTION2);
-  Tuple *t_end = dict_find(iterator, MSG_END);
-  
-  if (t_end == NULL){
-    if (num_items < 50 && t_line_name != NULL && t_line_num != NULL){
-      APP_LOG(APP_LOG_LEVEL_INFO, "Line name %s", t_line_name->value->cstring);
-      APP_LOG(APP_LOG_LEVEL_INFO, "Line num %s", t_line_num->value->cstring);
-      
-      strcpy(line_list[num_items].line_name, t_line_name->value->cstring);
-      strcpy(line_list[num_items].line_num, t_line_num->value->cstring);
-      strcpy(line_list[num_items].direction1, t_line_direction1->value->cstring);
-      strcpy(line_list[num_items].direction2, t_line_direction2->value->cstring);
-      
-      num_items++;
-    }
-  } else {
-    lines_window_show();
-  }
-    
-}
-
 void init_lines() {
-  app_message_register_inbox_received(inbox_received_callback);
-  app_message_register_inbox_dropped(inbox_dropped_callback);
-  app_message_register_outbox_failed(outbox_failed_callback);
-  app_message_register_outbox_sent(outbox_sent_callback);
   
-  // Open AppMessage
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 void lines_window_hide() {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Destroy lines screen");
-
-  // menu_layer_destroy(s_menu_layer);
-  // window_destroy(s_lines_window);
+  APP_LOG(APP_LOG_LEVEL_INFO, "Destroy lines screen");  
 }

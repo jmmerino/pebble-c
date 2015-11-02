@@ -35,12 +35,3 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 
 static void lines_window_load(Window *window);
 static void lines_window_unload(Window *window);
-
-////////////////////////////////////
-//  MESSAGES COMUNICATION WITH JS
-////////////////////////////////////
-
-static void inbox_dropped_callback(AppMessageResult reason, void *context);
-static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context);
-static void outbox_sent_callback(DictionaryIterator *iterator, void *context);
-static void inbox_received_callback(DictionaryIterator *iterator, void *context);

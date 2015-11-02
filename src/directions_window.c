@@ -2,6 +2,7 @@
 #include "directions_window.h"
 #include "lines_window.h"
 #include "stops_window.h"
+#include "loading_stops_window.h"
 
 // BEGIN AUTO-GENERATED UI CODE; DO NOT MODIFY
 static Window *s_window;
@@ -47,18 +48,22 @@ static void initialise_ui(void) {
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_label_direction2_layer);
   
   // s_textlayer_1
+  APP_LOG(APP_LOG_LEVEL_INFO, "Current line: %s", current_line.line_num);  
+
   s_textlayer_1 = text_layer_create(GRect(5, 10, 100, 39));
-  text_layer_set_text(s_textlayer_1, strcat(current_line.line_num, " - Sentido"));
+  text_layer_set_text(s_textlayer_1, current_line.line_num);
   text_layer_set_font(s_textlayer_1, s_res_gothic_18_bold);
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_textlayer_1);
 }
 
 static void direction1_click_handler(ClickRecognizerRef recognizer, Window *window) {
-    init_stops();
+    loading_stops_window_show();
+    init_stops("1");
 }
 
 static void direction2_click_handler(ClickRecognizerRef recognizer, Window *window) {
-    vibes_short_pulse();
+    loading_stops_window_show();
+    init_stops("2");
 }
 
 

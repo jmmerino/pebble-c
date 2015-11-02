@@ -1,10 +1,17 @@
 {
     "appKeys": {
-        "LINE_NAME"       : 0,
-        "LINE_NUM"        : 1,
-        "LINE_DIRECTION1" : 2,
-        "LINE_DIRECTION2" : 3,
-        "MSG_END"         : 99
+        "LINE_NAME"           : 11,
+        "LINE_NUM"            : 12,
+        "LINE_DIRECTION1"     : 13,
+        "LINE_DIRECTION2"     : 14,
+        "MSG_END_LINE"        : 10,
+        "STOP_NAME"           : 21,
+        "STOP_NEXT_BUS"       : 22,
+        "MSG_END_BUS_STOP"    : 20,
+        "JS_CONNECTION_READY" : 1000,
+        "JS_GET_LINES"        : 1001,
+        "JS_LINE_NUM"         : 1002,
+        "JS_LINE_DIRECTION"   : 1003
     },
     "capabilities": [
         ""

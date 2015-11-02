@@ -1,12 +1,12 @@
 #include <pebble.h>
 
+#include <connection.h>
 #include <stops_window.h>
+#include <lines_window.h>
 #include <directions_window.h>
+#include <loading_stops_window.h>
 
 #define BUSAL_COLOR GColorFromHEX(0xee6e73)
-#define STOP_NAME 51
-#define STOP_NEXT_BUS 52
-#define MSG_END 99
   
 static Window *s_stops_window;
 static MenuLayer *s_menu_layer;
@@ -49,7 +49,10 @@ static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuI
 //  STOPS WINDOW HANDLERS
 ////////////////////////////////
 
-static void stops_window_load(Window *window) {    
+static void stops_window_load(Window *window) {   
+  // Destroy loading_stops window
+  loading_stops_window_hide();  
+
   // Get the root layer
   Layer *window_layer = window_get_root_layer(window);
 
@@ -78,7 +81,9 @@ static void stops_window_unload(Window *window) {
   menu_layer_destroy(s_menu_layer);
 }
 
-void stops_window_show() {
+void stops_window_show(int num_items_param) {
+  num_items = num_items_param;
+  
   // Create main Window
   s_stops_window = window_create();
   window_set_window_handlers(s_stops_window, (WindowHandlers) {
@@ -91,53 +96,8 @@ void stops_window_show() {
 }
 
 
-////////////////////////////////////
-//  MESSAGES COMUNICATION WITH JS
-////////////////////////////////////
-
-
-static void inbox_dropped_callback(AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped! reason: %d", reason);
-}
-
-static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
-}
-
-static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
-}
-
-static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
-  // Read first item
-  Tuple *t_stop_name = dict_find(iterator, STOP_NAME);
-  Tuple *t_stop_next_bus = dict_find(iterator, STOP_NEXT_BUS);  
-  Tuple *t_end = dict_find(iterator, MSG_END);
-  
-  if (t_end == NULL){
-    if (num_items < 50 && t_stop_name != NULL && t_stop_next_bus != NULL){
-      APP_LOG(APP_LOG_LEVEL_INFO, "Stop name %s", t_stop_name->value->cstring);
-      APP_LOG(APP_LOG_LEVEL_INFO, "Stop next bux %s", t_stop_next_bus->value->cstring);
-      
-      strcpy(stop_list[num_items].stop_name, t_stop_name->value->cstring);
-      strcpy(stop_list[num_items].stop_next_bus, t_stop_next_bus->value->cstring);      
-      
-      num_items++;
-    }
-  } else {
-    stops_window_show();
-  }
-    
-}
-
-void init_stops() {
-  app_message_register_inbox_received(inbox_received_callback);
-  app_message_register_inbox_dropped(inbox_dropped_callback);
-  app_message_register_outbox_failed(outbox_failed_callback);
-  app_message_register_outbox_sent(outbox_sent_callback);
-  
-  // Open AppMessage
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+void init_stops(char *direction) {
+  connection_get_bus_stops(current_line.line_num, direction);
 }
 
 void stops_window_hide() {

@@ -1,11 +1,14 @@
 #include <pebble.h>
+
+#include "lines_window.h"
+
 #define BUSAL_COLOR GColorFromHEX(0xee6e73)
   
 static TextLayer *title_text_layer;
 static TextLayer *loading_text_layer;
 static Window *s_main_window;
 
-void splash_window_set_text(Layer *window_layer) {
+void loading_stops_window_set_text(Layer *window_layer) {
     
   // Get the bounds of the window for sizing the text layer
   GRect bounds = layer_get_bounds(window_layer);
@@ -18,9 +21,9 @@ void splash_window_set_text(Layer *window_layer) {
   text_layer_set_font(title_text_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
   text_layer_set_text_alignment(title_text_layer, GTextAlignmentCenter); 
   layer_add_child(window_layer, text_layer_get_layer(title_text_layer));
-  
+    
   loading_text_layer = text_layer_create(GRect(0, (bounds.size.h / 2) + 10, bounds.size.w, bounds.size.h));
-  text_layer_set_text(loading_text_layer, "Cargando líneas...");
+  text_layer_set_text(loading_text_layer, "Cargando Paradas...");
   text_layer_set_text_color(loading_text_layer, GColorBlack);
   text_layer_set_background_color(loading_text_layer, BUSAL_COLOR);
   text_layer_set_font(loading_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24));
@@ -29,36 +32,36 @@ void splash_window_set_text(Layer *window_layer) {
   
 }
 
-void splash_window_destroy_text() {
+void loading_stops_window_destroy_text() {
   text_layer_destroy(title_text_layer);
   text_layer_destroy(loading_text_layer);
 }
 
 
-static void splash_window_load(Window *window) {
+static void loading_stops_window_load(Window *window) {
   // Get the root layer
   Layer *window_layer = window_get_root_layer(window);
-  splash_window_set_text(window_layer);
+  loading_stops_window_set_text(window_layer);
 }
 
-static void splash_window_unload(Window *window) {
-  splash_window_destroy_text();
+static void loading_stops_window_unload(Window *window) {
+  loading_stops_window_destroy_text();
 }
 
 
-void splash_window_show() {
+void loading_stops_window_show() {
   // Create main Window
   s_main_window = window_create();
   window_set_window_handlers(s_main_window, (WindowHandlers) {
-    .load = splash_window_load,
-    .unload = splash_window_unload,
+    .load = loading_stops_window_load,
+    .unload = loading_stops_window_unload,
   });
   
   window_set_background_color(s_main_window, BUSAL_COLOR);
   window_stack_push(s_main_window, true);
 }
 
-void splash_window_hide() {
+void loading_stops_window_hide() {
   window_stack_remove(s_main_window, false);
   // Destroy main Window
   window_destroy(s_main_window);
