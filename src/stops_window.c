@@ -1,19 +1,14 @@
 #include <pebble.h>
 
-#include <lines_window.h>
+#include <stops_window.h>
 #include <directions_window.h>
-#include <splash_window.h>
 
 #define BUSAL_COLOR GColorFromHEX(0xee6e73)
-#define LINE_NAME 0
-#define LINE_NUM 1
-#define LINE_DIRECTION1 2
-#define LINE_DIRECTION2 3
+#define STOP_NAME 51
+#define STOP_NEXT_BUS 52
 #define MSG_END 99
-#define NUM_FIRST_MENU_ITEMS 3
-#define NUM_MENU_SECTIONS 1
   
-static Window *s_lines_window;
+static Window *s_stops_window;
 static MenuLayer *s_menu_layer;
 static int num_items = 0;
 
@@ -35,39 +30,26 @@ static int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t s
 }
 
 static void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {  
-  menu_cell_basic_header_draw(ctx, cell_layer, "Lineas");
-}
-
-static void menu_select_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *data) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Selected line: %s", line_list[cell_index->row].line_name);
-
-  vibes_short_pulse();
-
-  current_line = line_list[cell_index->row];
-
-  directions_window_show();
+  menu_cell_basic_header_draw(ctx, cell_layer, "Paradas");
 }
 
 static void menu_draw_row_callback(GContext* ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data) {
   if (cell_index->section == 0) {
-      char line_text[150];
-      snprintf(line_text, sizeof(line_text), "%s", line_list[cell_index->row].line_name);
-      menu_cell_basic_draw(ctx, cell_layer, 
-        line_list[cell_index->row].line_num, 
-        line_text,
+      char stop_text[150];
+      snprintf(stop_text, sizeof(stop_text), "%s", stop_list[cell_index->row].stop_name);
+      menu_cell_basic_draw(ctx, cell_layer,         
+        stop_text,
+        stop_list[cell_index->row].stop_next_bus,
         NULL);
   }
 }
 
 
 ////////////////////////////////
-//  LINES WINDOW HANDLERS
+//  STOPS WINDOW HANDLERS
 ////////////////////////////////
 
-static void lines_window_load(Window *window) {
-  // Destroy splash window
-  splash_window_hide();  
-    
+static void stops_window_load(Window *window) {    
   // Get the root layer
   Layer *window_layer = window_get_root_layer(window);
 
@@ -81,8 +63,7 @@ static void lines_window_load(Window *window) {
     .get_num_rows = menu_get_num_rows_callback,
     .get_header_height = menu_get_header_height_callback,
     .draw_header = menu_draw_header_callback,
-    .draw_row = menu_draw_row_callback,
-    .select_click = menu_select_callback,
+    .draw_row = menu_draw_row_callback
   });
   
   // Bind the menu layer's click config provider to the window for interactivity
@@ -93,20 +74,20 @@ static void lines_window_load(Window *window) {
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
 }
 
-static void lines_window_unload(Window *window) {
+static void stops_window_unload(Window *window) {
   menu_layer_destroy(s_menu_layer);
 }
 
-void lines_window_show() {
+void stops_window_show() {
   // Create main Window
-  s_lines_window = window_create();
-  window_set_window_handlers(s_lines_window, (WindowHandlers) {
-    .load = lines_window_load,
-    .unload = lines_window_unload,
+  s_stops_window = window_create();
+  window_set_window_handlers(s_stops_window, (WindowHandlers) {
+    .load = stops_window_load,
+    .unload = stops_window_unload,
   });
   
-  window_set_background_color(s_lines_window, BUSAL_COLOR);
-  window_stack_push(s_lines_window, true);
+  window_set_background_color(s_stops_window, BUSAL_COLOR);
+  window_stack_push(s_stops_window, true);
 }
 
 
@@ -129,31 +110,27 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
   // Read first item
-  Tuple *t_line_name = dict_find(iterator, LINE_NAME);
-  Tuple *t_line_num = dict_find(iterator, LINE_NUM);
-  Tuple *t_line_direction1 = dict_find(iterator, LINE_DIRECTION1);
-  Tuple *t_line_direction2 = dict_find(iterator, LINE_DIRECTION2);
+  Tuple *t_stop_name = dict_find(iterator, STOP_NAME);
+  Tuple *t_stop_next_bus = dict_find(iterator, STOP_NEXT_BUS);  
   Tuple *t_end = dict_find(iterator, MSG_END);
   
   if (t_end == NULL){
-    if (num_items < 50 && t_line_name != NULL && t_line_num != NULL){
-      APP_LOG(APP_LOG_LEVEL_INFO, "Line name %s", t_line_name->value->cstring);
-      APP_LOG(APP_LOG_LEVEL_INFO, "Line num %s", t_line_num->value->cstring);
+    if (num_items < 50 && t_stop_name != NULL && t_stop_next_bus != NULL){
+      APP_LOG(APP_LOG_LEVEL_INFO, "Stop name %s", t_stop_name->value->cstring);
+      APP_LOG(APP_LOG_LEVEL_INFO, "Stop next bux %s", t_stop_next_bus->value->cstring);
       
-      strcpy(line_list[num_items].line_name, t_line_name->value->cstring);
-      strcpy(line_list[num_items].line_num, t_line_num->value->cstring);
-      strcpy(line_list[num_items].direction1, t_line_direction1->value->cstring);
-      strcpy(line_list[num_items].direction2, t_line_direction2->value->cstring);
+      strcpy(stop_list[num_items].stop_name, t_stop_name->value->cstring);
+      strcpy(stop_list[num_items].stop_next_bus, t_stop_next_bus->value->cstring);      
       
       num_items++;
     }
   } else {
-    lines_window_show();
+    stops_window_show();
   }
     
 }
 
-void init_lines() {
+void init_stops() {
   app_message_register_inbox_received(inbox_received_callback);
   app_message_register_inbox_dropped(inbox_dropped_callback);
   app_message_register_outbox_failed(outbox_failed_callback);
@@ -163,9 +140,9 @@ void init_lines() {
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
-void lines_window_hide() {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Destroy lines screen");
+void stops_window_hide() {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Destroy stops screen");
 
   // menu_layer_destroy(s_menu_layer);
-  // window_destroy(s_lines_window);
+  // window_destroy(s_stops_window);
 }
