@@ -6,7 +6,10 @@
 #include <directions_window.h>
 #include <loading_stops_window.h>
 
-#define BUSAL_COLOR GColorFromHEX(0xee6e73)
+#ifdef PBL_COLOR
+  #define BUSAL_COLOR GColorFromHEX(0xee6e73)
+#endif
+
   
 static Window *s_stops_window;
 static MenuLayer *s_menu_layer;
@@ -91,7 +94,10 @@ void stops_window_show(int num_items_param) {
     .unload = stops_window_unload,
   });
   
-  window_set_background_color(s_stops_window, BUSAL_COLOR);
+  #ifdef PBL_COLOR
+    window_set_background_color(s_stops_window, BUSAL_COLOR);
+  #endif
+
   window_stack_push(s_stops_window, true);
 }
 

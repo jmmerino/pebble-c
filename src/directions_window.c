@@ -28,7 +28,9 @@ static void initialise_ui(void) {
   // s_actionbarlayer_1
   s_actionbarlayer_1 = action_bar_layer_create();
   action_bar_layer_add_to_window(s_actionbarlayer_1, s_window);
+  #ifdef PBL_COLOR
   action_bar_layer_set_background_color(s_actionbarlayer_1, GColorBlack);
+  #endif
   action_bar_layer_set_icon(s_actionbarlayer_1, BUTTON_ID_SELECT, s_res_icon_up_arrow);
   action_bar_layer_set_icon(s_actionbarlayer_1, BUTTON_ID_DOWN, s_res_icon_down_arrow);
   // Set the click config provider:

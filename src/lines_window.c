@@ -5,7 +5,9 @@
 #include <directions_window.h>
 #include <splash_window.h>
 
+#ifdef PBL_COLOR
 #define BUSAL_COLOR GColorFromHEX(0xee6e73)
+#endif
   
 static Window *s_lines_window;
 static MenuLayer *s_menu_layer;
@@ -101,7 +103,9 @@ void lines_window_show(int num_items_param) {
     .unload = lines_window_unload,
   });
   
+  #ifdef PBL_COLOR
   window_set_background_color(s_lines_window, BUSAL_COLOR);
+  #endif
   window_stack_push(s_lines_window, true);
 }
 
