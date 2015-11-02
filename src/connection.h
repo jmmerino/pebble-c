@@ -4,7 +4,7 @@
 ////////////////////////////////////
 
 void init_connection();
-void connection_get_bus_stops();
+void connection_get_bus_stops(char *line_num, char *direction);
 
 ////////////////////////////////////
 //  MESSAGES COMUNICATION WITH JS

@@ -135,6 +135,11 @@ void init_connection() {
 }
 
 void connection_get_bus_stops(char *line_num, char *direction) {
+  char *params = "";
+  strcat(params, line_num);
+  strcat(params, ":");
+  strcat(params, direction);
+
   num_items = 0;
-  send_message_to_phone(JS_LINE_NUM, strcat(strcat(line_num, ":"), direction) );  
+  send_message_to_phone(JS_LINE_NUM, params);  
 }

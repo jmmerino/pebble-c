@@ -1,6 +1,5 @@
 var current_line,
-  direction,
-  cached_lines;
+  direction;
 
 var xhrRequest = function (url, type, callback) {
   var xhr = new XMLHttpRequest();
@@ -11,16 +10,17 @@ var xhrRequest = function (url, type, callback) {
   xhr.send();
 };
 
-function getLines() {
+function getLines() {  
+  
+  var cached_lines = JSON.parse(localStorage.getItem("Busal::lines"));    
 
   if (!cached_lines) {
     var url = "http://busal.es/api/v0.1/lines";
     
     xhrRequest(url, 'GET', 
       function(responseText) {
-        // responseText contains a JSON object with weather info
-        var api_lines = JSON.parse(responseText);
-        cached_lines = api_lines;
+        localStorage.setItem("Busal::lines", responseText);
+        var api_lines = JSON.parse(responseText);        
         
         recursive_send(api_lines, process_line_data, {
           'MSG_END_LINE': '1'
@@ -29,7 +29,7 @@ function getLines() {
       }      
     );
   } else {
-    console.log("Cached lines loaded");
+    console.log("Cached lines");
     recursive_send(cached_lines, process_line_data, {
       'MSG_END_LINE': '1'
     });

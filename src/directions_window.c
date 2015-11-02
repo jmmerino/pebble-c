@@ -42,7 +42,7 @@ static void initialise_ui(void) {
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_label_direction1_layer);
   
   // s_label_direction2_layer
-  s_label_direction2_layer = text_layer_create(GRect(10, 114, 105, 31));
+  s_label_direction2_layer = text_layer_create(GRect(9, 114, 105, 31));
   text_layer_set_text(s_label_direction2_layer, current_line.direction2);
   text_layer_set_font(s_label_direction2_layer, s_res_gothic_14);
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_label_direction2_layer);
